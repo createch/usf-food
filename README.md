@@ -5,7 +5,7 @@ An experiment with Node.js, Express, and CouchDB.
 
 A server that returns the food being served at the USF dining hall's for a specified week. This will later be integrated into a Phonegap based app.
 
-See (sample-output.json).
+See https://github.com/createch/usf-food/blob/initial/sample-output.json
 
 Components
 --
