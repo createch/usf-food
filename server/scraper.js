@@ -22,9 +22,10 @@ var jsdom = require('jsdom'),
 var number_of_scrapes = 0;
 
 // to loop backwards in time, just run the scraper with the begin_week and end_week commands
-// below will save the menus from week 4 weeks ago to 1 weeks ago
-var begin_week = -1;
-var end_week = -4;
+// begin: 1, end: 4 gets next week until 4 weeks in the future
+// begin: -4, end: 0 gets this week until 2 weeks in the past
+var end_week = 4;
+
 function repeater(i) {
 	console.log("\n\n=====================");
 	console.log("Working on week #" + i);
@@ -37,6 +38,8 @@ function repeater(i) {
 		});
 	}
 }
+begin_week *= -1;
+end_week *= -1;
 repeater(begin_week);
 
 function asyncwork(week, globalCallback) {
@@ -67,7 +70,6 @@ function asyncwork(week, globalCallback) {
 		// used to figure out when all the scrapes have finished running
 		number_of_scrapes = 0;
 		var end_number_of_scrapes = 14;
-
 
 		getMenu("argos", thisSunday, 1);
 		getMenu("argos", thisSunday, 639);
