@@ -27,26 +27,41 @@ var events = require('events'),
 
 app.enable("jsonp callback");
 
-app.get('/', function(req, res) {
-	res.send('Hello World!');
-});
+// console response prefixes
+var prefix = {
+	req : "[ Request ]	",
+	res : "[ Response ]	",
+	err : "[ Error ]"
+};
 
-app.get('/menu/:month/:day/:year', function(req, res) {
+app.get('/week/:month/:day/:year', function(req, res) {
 
-	console.log('Request made for date ' + req.params.month + '/' + req.params.day + '/' + req.params.year);
+	console.log(prefix.req + req.route.path);
 
-	menu.getMenu(req.params.month, req.params.day, req.params.year, function(err, doc) {
-
-		if (err !== null) {
-			console.error(err);
-			res.json(err);
-		} else {
-			console.log("Document " + doc._id + " returned");
-			res.json(doc);
-		}
-
+	menu.week({
+		month: req.params.month - 1,
+		day: req.params.day,
+		year: req.params.year,
+		callback: outputDoc,
+		res: res
 	});
 
 });
 
-app.listen(80);
+
+
+app.get('*', function(req, res) {
+	res.send('Hello World!');
+});
+
+function outputDoc(err, doc, res) {
+	if (err !== null) {
+		console.error(err);
+		res.json(err);
+	} else {
+		console.log(prefix.res + "Document: " + doc._id);
+		res.json(doc);
+	}
+}
+
+app.listen(8000);

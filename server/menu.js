@@ -16,25 +16,21 @@ var events = require('events'),
 	db = client.db('usf-food'),
 	eventEmitter = new events.EventEmitter();
 	
+/*
+	menu.week
+	menu.day
+	menu.week.location
+	menu.day.location
+*/
 
 module.exports = {
 	
-	getMenu: function () {
-		// accepts any date in the format getMenu(month, day, year)
-		// return the menu as a JSON document for that date
-		// the appropriate menu is the menu for this week's sunday
-		
-		var month = arguments[0] - 1 ;
-		var day = arguments[1];
-		var year = arguments[2];
-		var callback = arguments[3];
+	week: function (args) {
 						
-		var date = new Date (year, month, day);
-				
+		var date = new Date (args.year, args.month, args.day);
 		// console.log ("Date provided: " + date.toDateString());
 			
 		sunday = new Date(date.getFullYear(),date.getMonth(),date.getDate()-date.getDay());
-		
 		// console.log ("Sunday result: " + sunday.toDateString());
 
 		
@@ -47,12 +43,12 @@ module.exports = {
 
 			// the document doesn't exist yet
 			if (err) {
-				callback(err, null);
+				args.callback(err, null, args.res);
 			}
 			
 			else {
 				// console.log (doc);
-				callback(null, doc);
+				args.callback(null, doc, args.res);
 			}
 		});
 		
