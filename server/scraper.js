@@ -24,12 +24,13 @@ var number_of_scrapes = 0;
 // to loop backwards in time, just run the scraper with the begin_week and end_week commands
 // begin: 1, end: 4 gets next week until 4 weeks in the future
 // begin: -4, end: 0 gets this week until 2 weeks in the past
-var end_week = 4;
+
+var begin_week = 0, end_week = 4;
 
 function repeater(i) {
 	console.log("\n\n=====================");
 	console.log("Working on week #" + i);
-	if (i !== end_week) {
+	if (i <= end_week) {
 		asyncwork(i, function() {
 
 			number_of_scrapes = 0;
