@@ -16,41 +16,71 @@ var events = require('events'),
 	db = client.db('usf-food'),
 	eventEmitter = new events.EventEmitter();
 	
-/*
-	menu.week
-	menu.day
-	menu.week.location
-	menu.day.location
-*/
+	/*
+		menu.week
+		menu.day
+		menu.week.location
+		menu.day.location
+	*/
 
 module.exports = {
-	
-	week: function (args) {
+
+	// TODO: Need to find a better name for args
+
+	week: function (args, callback) {
 						
 		var date = new Date (args.year, args.month, args.day);
 		// console.log ("Date provided: " + date.toDateString());
-			
-		sunday = new Date(date.getFullYear(),date.getMonth(),date.getDate()-date.getDay());
-		// console.log ("Sunday result: " + sunday.toDateString());
-
 		
-		// the docs name is in this format with the date of the nearest sunday
-		var doc_name = (sunday.getMonth() + 1) + "_" + sunday.getDate() + "_" + sunday.getFullYear();
-			
-		// console.log ("Doc name is " + doc_name);
-					
-		db.getDoc(doc_name, function (err, doc){
+		args.sunday = sundayDateString(date);
+		
+		args.docName = "document-" + args.sunday;
+		
+		getDoc(args, callback);
 
-			// the document doesn't exist yet
-			if (err) {
-				args.callback(err, null, args.res);
-			}
+	},
+
+	locationWeek: function(args, callback) {
+
+		var date = new Date (args.year, args.month, args.day);
+		args.sunday = sundayDateString(date);
+
+		args.docName = "view-" + args.location + "-" + args.sunday;
+
+		db.view('locations', args.location, function() {
 			
+			var err = arguments[0];
+			var doc = arguments[1] || undefined;
+
+			if (err !== null) {
+				callback.call(args, err, null);
+			}
 			else {
-				// console.log (doc);
-				args.callback(null, doc, args.res);
+				callback.call(args, null, doc);
 			}
+
 		});
-		
 	}
 };
+
+function sundayDateString(date) {
+	// returns the sunday for this week as a string like this: 8_5_2012
+	// documents are named like this in couch
+	var sunday = new Date(date.getFullYear(),date.getMonth(),date.getDate()-date.getDay());
+	return (sunday.getMonth() + 1) + "_" + sunday.getDate() + "_" + sunday.getFullYear();
+}
+
+function getDoc(args, callback) {
+
+	db.getDoc(args.sunday, function (err, doc){
+
+		// the document doesn't exist yet
+		if (err) {
+			callback.call(args, err, null);
+		}
+		// document found
+		else {
+			callback.call(args, null, doc);
+		}
+	});
+}
